@@ -1,0 +1,20 @@
+# SSH client configuration example
+# Copy relevant sections to ~/.ssh/config
+# Permissions: chmod 600 ~/.ssh/config
+
+Host webserver
+    HostName 192.168.1.10
+    User admin
+    Port 22
+    IdentityFile ~/.ssh/id_ed25519
+
+Host dbserver
+    HostName 192.168.1.20
+    User dbadmin
+    Port 2222
+    IdentityFile ~/.ssh/id_ed25519
+
+Host *
+    AddKeysToAgent yes
+    ServerAliveInterval 60
+    ServerAliveCountMax 3

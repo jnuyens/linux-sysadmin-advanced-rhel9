@@ -1,0 +1,5 @@
+[custom-local]
+name=Custom Local Repository
+baseurl=file:///var/repos/custom
+enabled=1
+gpgcheck=0
