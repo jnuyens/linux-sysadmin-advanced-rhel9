@@ -1,0 +1,16 @@
+# Quadlet container file for Chapter 4 exercises
+# Place in ~/.config/containers/systemd/ (rootless)
+# or /etc/containers/systemd/ (rootful)
+
+[Container]
+Image=docker.io/library/nginx:latest
+ContainerName=webapp
+PublishPort=8080:80
+Volume=%h/web-content:/usr/share/nginx/html:Z
+
+[Service]
+Restart=always
+TimeoutStartSec=900
+
+[Install]
+WantedBy=default.target

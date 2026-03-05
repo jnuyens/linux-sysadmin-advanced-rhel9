@@ -1,0 +1,4 @@
+# Quadlet volume file for Chapter 4 exercises
+# Creates a managed volume for persistent data
+
+[Volume]
