@@ -1,0 +1,14 @@
+# disk-check.service - Chapter 7 Exercise: systemd Service Unit
+# Place in /etc/systemd/system/disk-check.service
+#
+# This service is triggered by disk-check.timer.
+# It runs a script that checks disk space and logs warnings.
+
+[Unit]
+Description=Check disk space and warn if low
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/disk-check.sh
+StandardOutput=journal
+StandardError=journal

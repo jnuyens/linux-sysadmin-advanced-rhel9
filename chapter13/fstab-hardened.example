@@ -1,0 +1,66 @@
+# /etc/fstab - Hardened mount options example
+# Chapter 13: Linux Security - Filesystem Security
+#
+# This file shows recommended mount options for security.
+# Adapt device names and UUIDs to your system.
+#
+# Key security mount options:
+#   noexec  - Prevent execution of binaries (breaks scripts in /tmp, snap, flatpak)
+#   nosuid  - Ignore SUID/SGID bits (prevents privilege escalation)
+#   nodev   - Ignore device files (prevents creation of block/char devices)
+#
+# Trade-offs to consider:
+#   - noexec on /tmp breaks some installers (rpm, dnf temp scripts)
+#   - noexec on /home breaks user-compiled programs and scripts
+#   - Separate partitions mean fixed sizes that may need resizing later
+#   - LVM helps with resizing but adds management complexity
+#   - Too many partitions complicate backup and recovery
+#
+# Recommendation: Start with nosuid,nodev on most partitions.
+# Add noexec only where you are sure no execution is needed.
+
+# Root filesystem - no special restrictions (must remain fully functional)
+UUID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx  /           xfs     defaults                    0 0
+
+# /boot - read-mostly, no execution needed after boot
+UUID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx  /boot       xfs     defaults,nosuid,nodev,noexec 0 0
+
+# /home - nosuid prevents SUID escalation from user files
+# Note: noexec would break user scripts and compiled programs
+UUID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx  /home       xfs     defaults,nosuid,nodev       0 0
+
+# /tmp - temporary files, restrict heavily
+# WARNING: noexec may break some package installations and build processes
+UUID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx  /tmp        xfs     defaults,nosuid,nodev,noexec 0 0
+
+# /var/tmp - persistent temp, same restrictions as /tmp
+UUID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx  /var/tmp    xfs     defaults,nosuid,nodev,noexec 0 0
+
+# /var - logs, spool, cache - nosuid is safe, noexec may break cron scripts in /var
+UUID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx  /var        xfs     defaults,nosuid,nodev       0 0
+
+# /var/log - log files only, very restrictive
+UUID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx  /var/log    xfs     defaults,nosuid,nodev,noexec 0 0
+
+# /var/log/audit - auditd logs, protect from tampering
+UUID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx  /var/log/audit xfs  defaults,nosuid,nodev,noexec 0 0
+
+# /dev/shm - shared memory tmpfs
+tmpfs                                      /dev/shm    tmpfs   defaults,nosuid,nodev,noexec 0 0
+
+# Swap
+UUID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx  none        swap    defaults                    0 0
+
+# ============================================================================
+# Notes on partition sizing (common pitfalls):
+# ============================================================================
+#
+# /boot      - 1 GB minimum (holds 2-3 kernels + initramfs)
+# /           - 10-20 GB (OS + essential packages)
+# /home      - Size depends on user needs
+# /tmp       - 2-5 GB (too small = build failures)
+# /var       - 10-50 GB (logs, packages, containers can grow fast)
+# /var/log   - 5-10 GB (separate to prevent log flood filling /var)
+#
+# Using LVM allows online resizing (lvextend + xfs_growfs)
+# Without LVM, resizing requires downtime and possibly backup/restore

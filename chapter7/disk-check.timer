@@ -1,0 +1,15 @@
+# disk-check.timer - Chapter 7 Exercise: systemd Timer
+# Place in /etc/systemd/system/disk-check.timer
+#
+# This timer runs the disk-check.service every hour.
+# It uses Persistent=true so missed runs execute on next boot.
+
+[Unit]
+Description=Hourly disk space check
+
+[Timer]
+OnCalendar=*:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

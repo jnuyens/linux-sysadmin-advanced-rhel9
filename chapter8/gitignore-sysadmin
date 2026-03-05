@@ -1,0 +1,57 @@
+# .gitignore template for sysadmin repositories
+# Chapter 8 - Git & Version Control
+#
+# Copy this to .gitignore in the root of your repository
+# and customize as needed.
+
+# ---- Secrets and credentials ----
+.env
+*.key
+*.pem
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+vault-password.txt
+credentials/
+secrets/
+*.vault
+
+# ---- Ansible ----
+*.retry
+ansible/vault_pass.txt
+
+# ---- Logs ----
+*.log
+logs/
+
+# ---- OS and editor artifacts ----
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.swo
+.idea/
+.vscode/
+*.bak
+
+# ---- Python ----
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# ---- Node (if using monitoring tools like Grafana plugins) ----
+node_modules/
+
+# ---- Terraform ----
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+
+# ---- Build artifacts ----
+*.tar.gz
+*.iso
+*.qcow2
+*.vmdk

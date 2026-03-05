@@ -1,0 +1,19 @@
+# Example /etc/crypttab entry for Chapter 5 exercises
+# Format: name  UUID=<uuid>  key-file  options
+#
+# This file is referenced during boot to unlock encrypted devices.
+# Place LUKS entries here for automated unlocking.
+#
+# Field 1: mapped device name (appears as /dev/mapper/<name>)
+# Field 2: source device (always use UUID=)
+# Field 3: key file path, or "none" for interactive passphrase
+# Field 4: options (luks = auto-detect LUKS format)
+#
+# Example with passphrase prompt at boot:
+# secret  UUID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx  none  luks
+#
+# Example with keyfile (no prompt):
+# secret  UUID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx  /root/luks-keyfile  luks
+#
+# After editing, run: sudo systemctl daemon-reload
+# Test without reboot: sudo cryptdisks_start secret

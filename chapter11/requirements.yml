@@ -1,0 +1,62 @@
+# =============================================================================
+# requirements.yml - Ansible Galaxy Dependencies
+# Advanced Linux System Administration - RHEL 9
+# =============================================================================
+# Install all dependencies with:
+#   ansible-galaxy install -r requirements.yml
+#
+# Force reinstall (upgrade) with:
+#   ansible-galaxy install -r requirements.yml --force
+#
+# This file should be committed to version control alongside your playbooks
+# so that anyone cloning the repo can install the exact same dependencies.
+# =============================================================================
+
+---
+# ---------------------------------------------------------------------------
+# Roles from Ansible Galaxy
+# Pin versions for reproducibility in production
+# ---------------------------------------------------------------------------
+roles:
+  # Jeff Geerling's server hardening role
+  # Configures: auto-updates, SSH hardening, fail2ban
+  # Docs: https://github.com/geerlingguy/ansible-role-security
+  - name: geerlingguy.security
+    version: "2.3.0"
+
+  # Jeff Geerling's firewall management role
+  # Configures: iptables rules, port opening/closing
+  # Docs: https://github.com/geerlingguy/ansible-role-firewall
+  - name: geerlingguy.firewall
+    version: "3.1.0"
+
+  # Jeff Geerling's Docker CE installation role
+  # Installs: Docker CE, docker-compose, adds users to docker group
+  # Docs: https://github.com/geerlingguy/ansible-role-docker
+  - name: geerlingguy.docker
+    version: "6.1.0"
+
+  # Jeff Geerling's NTP/Chrony role
+  # Configures: time synchronization (chrony on RHEL 9)
+  # Docs: https://github.com/geerlingguy/ansible-role-ntp
+  - name: geerlingguy.ntp
+
+  # Jeff Geerling's EPEL repository role
+  # Enables: Extra Packages for Enterprise Linux
+  # Docs: https://github.com/geerlingguy/ansible-role-repo-epel
+  - name: geerlingguy.repo-epel
+
+# ---------------------------------------------------------------------------
+# Collections from Ansible Galaxy
+# Collections provide modules, plugins, and roles in namespaced packages
+# ---------------------------------------------------------------------------
+collections:
+  # POSIX modules: SELinux, sysctl, mount, acl, at, synchronize
+  # Required for: ansible.posix.seboolean, ansible.posix.sysctl, etc.
+  - name: ansible.posix
+    version: ">=1.5.0"
+
+  # General-purpose community modules: timezone, modprobe, nmcli, etc.
+  # Required for: community.general.timezone, community.general.nmcli, etc.
+  - name: community.general
+    version: ">=8.0.0"

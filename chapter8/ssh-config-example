@@ -1,0 +1,36 @@
+# ~/.ssh/config - Example SSH configuration for git platforms
+# Chapter 8 - Git & Version Control
+#
+# This file configures SSH to use different keys for different git platforms.
+# Place in ~/.ssh/config (create if it doesn't exist).
+# Permissions must be 600: chmod 600 ~/.ssh/config
+
+# GitHub - uses Ed25519 key
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_github
+    IdentitiesOnly yes
+
+# GitLab (self-hosted example)
+Host gitlab.company.com
+    HostName gitlab.company.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_gitlab
+    IdentitiesOnly yes
+    Port 22
+
+# Codeberg
+Host codeberg.org
+    HostName codeberg.org
+    User git
+    IdentityFile ~/.ssh/id_ed25519_codeberg
+    IdentitiesOnly yes
+
+# Test connectivity:
+#   ssh -T git@github.com
+#   ssh -T git@codeberg.org
+#   ssh -T git@gitlab.company.com
+#
+# Generate a new key:
+#   ssh-keygen -t ed25519 -C "you@example.com" -f ~/.ssh/id_ed25519_github

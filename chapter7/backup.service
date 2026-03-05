@@ -1,0 +1,16 @@
+# backup.service - Chapter 7 Exercise: Daily Backup Service
+# Place in /etc/systemd/system/backup.service
+#
+# Triggered by backup.timer. Runs the backup script at low priority
+# (Nice=10) with idle I/O scheduling to minimize impact on production.
+
+[Unit]
+Description=Daily backup job
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/backup.sh
+Nice=10
+IOSchedulingClass=idle
+StandardOutput=journal
+StandardError=journal

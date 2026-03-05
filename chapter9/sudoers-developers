@@ -1,0 +1,24 @@
+# /etc/sudoers.d/developers - Chapter 9 Exercise
+# Drop-in sudoers file for the developers group.
+#
+# Always edit with: visudo -f /etc/sudoers.d/developers
+# File permissions must be 0440: chmod 0440 /etc/sudoers.d/developers
+#
+# Syntax: WHO WHERE = (AS_WHOM) WHAT
+
+# Allow developers to restart and check status of web services
+%developers  ALL=(root)  /usr/bin/systemctl restart nginx, \
+                         /usr/bin/systemctl reload nginx, \
+                         /usr/bin/systemctl status nginx, \
+                         /usr/bin/systemctl restart httpd, \
+                         /usr/bin/systemctl reload httpd, \
+                         /usr/bin/systemctl status httpd
+
+# Allow developers to view system logs (read-only)
+%developers  ALL=(root)  /usr/bin/journalctl
+
+# Allow the deploy script to run without password (for CI/CD)
+%developers  ALL=(root)  NOPASSWD: /usr/local/bin/deploy.sh
+
+# Allow developers to manage their own containers
+%developers  ALL=(root)  /usr/bin/podman *

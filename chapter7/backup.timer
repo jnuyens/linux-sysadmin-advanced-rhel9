@@ -1,0 +1,17 @@
+# backup.timer - Chapter 7 Exercise: Daily Backup Timer
+# Place in /etc/systemd/system/backup.timer
+#
+# Runs daily at 3am with a random delay up to 15 minutes
+# to avoid all servers backing up at the exact same time.
+# Persistent=true ensures missed backups run on next boot.
+
+[Unit]
+Description=Daily backup timer
+
+[Timer]
+OnCalendar=*-*-* 03:00:00
+Persistent=true
+RandomizedDelaySec=900
+
+[Install]
+WantedBy=timers.target

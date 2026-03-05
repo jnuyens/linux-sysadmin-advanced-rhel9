@@ -1,0 +1,24 @@
+# Example /etc/fstab entries for Chapter 5 exercises
+# ALWAYS use UUID= instead of device paths like /dev/sdb1
+#
+# Format: <device>  <mountpoint>  <type>  <options>  <dump>  <fsck>
+#
+# Regular XFS mount:
+# UUID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx  /mnt/data  xfs  defaults  0 0
+#
+# LVM logical volume (also use UUID):
+# UUID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx  /mnt/appdata  xfs  defaults  0 0
+#
+# LUKS encrypted device (requires matching /etc/crypttab entry):
+# /dev/mapper/secret  /mnt/secret  xfs  defaults  0 0
+#
+# Mount options explained:
+#   defaults    = rw,suid,dev,exec,auto,nouser,async
+#   noatime     = don't update access times (improves performance)
+#   nofail      = don't fail boot if device is missing
+#   x-systemd.device-timeout=30  = wait 30s for device to appear
+#
+# The last two fields:
+#   dump (5th) = 0 means don't back up with dump utility
+#   fsck (6th) = 0 means don't check at boot (XFS uses xfs_repair, not fsck)
+#                1 for root filesystem, 2 for other ext4 filesystems

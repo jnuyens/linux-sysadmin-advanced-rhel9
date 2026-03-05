@@ -1,0 +1,62 @@
+# /etc/systemd/system/memory-limited.service - Chapter 10 Exercise
+#
+# Example systemd service with cgroup v2 memory limits.
+# This demonstrates how to protect the system from a runaway process.
+#
+# Install:
+#     sudo cp memory-limited.service /etc/systemd/system/
+#     sudo systemctl daemon-reload
+#     sudo systemctl start memory-limited
+#
+# Monitor:
+#     sudo systemd-cgtop
+#     journalctl -u memory-limited -f
+
+[Unit]
+Description=Memory-Limited Demo Service
+Documentation=man:systemd.resource-control(5)
+
+[Service]
+Type=simple
+
+# The actual command - replace with your application
+ExecStart=/usr/bin/python3 /opt/scripts/memory-hog.py 0
+
+# ---------------------------------------------------------------
+# Memory limits (cgroups v2)
+# ---------------------------------------------------------------
+
+# Hard limit - process is OOM-killed if it exceeds this
+MemoryMax=256M
+
+# Soft limit - kernel starts reclaiming/throttling above this
+# The process is not killed but performance degrades
+MemoryHigh=200M
+
+# Prevent this service from using swap entirely
+MemorySwapMax=0
+
+# ---------------------------------------------------------------
+# OOM protection
+# ---------------------------------------------------------------
+
+# OOM score adjustment: -1000 (never kill) to 1000 (kill first)
+# Use negative values for critical services
+# OOMScoreAdjust=-500
+
+# What to do when the cgroup OOM fires
+# "kill" = kill the main process (default for MemoryMax)
+OOMPolicy=stop
+
+# ---------------------------------------------------------------
+# Restart policy
+# ---------------------------------------------------------------
+Restart=on-failure
+RestartSec=5s
+
+# Log OOM events for monitoring
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,116 @@
+# =============================================================================
+# site.yml - Hardened Web Server Deployment Playbook
+# Advanced Linux System Administration - RHEL 9
+# =============================================================================
+# This playbook demonstrates a real-world deployment pattern:
+#   1. Galaxy roles for generic, repeatable tasks (security, firewall)
+#   2. Custom role for application-specific setup (webserver)
+#   3. Inline tasks for site-specific configuration (SELinux, firewalld)
+#
+# Usage:
+#   ansible-playbook site.yml                    # full deployment
+#   ansible-playbook site.yml --check --diff     # dry run (no changes)
+#   ansible-playbook site.yml -l web01           # single host only
+#   ansible-playbook site.yml -vv                # verbose output
+#   ansible-playbook site.yml --tags webserver   # specific role only
+#
+# Prerequisites:
+#   ansible-galaxy install -r requirements.yml
+# =============================================================================
+
+---
+- name: Deploy hardened web server
+  hosts: webservers
+  become: true
+
+  # Variables can be overridden in group_vars/ or on the command line (-e)
+  vars:
+    http_port: 80
+    https_port: 443
+    document_root: /var/www/html
+    server_admin: admin@example.com
+
+    # geerlingguy.security role variables
+    security_autoupdate_enabled: true
+    security_fail2ban_enabled: true
+    security_ssh_password_authentication: "no"
+    security_ssh_permit_root_login: "no"
+    security_ssh_port: 22
+
+    # geerlingguy.firewall role variables
+    firewall_allowed_tcp_ports:
+      - "22"
+      - "{{ http_port | string }}"
+      - "{{ https_port | string }}"
+
+  # ---------------------------------------------------------------------------
+  # Pre-tasks run BEFORE roles
+  # Use for prerequisites that roles depend on
+  # ---------------------------------------------------------------------------
+  pre_tasks:
+    - name: Update all packages to latest version
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+      tags: [update]
+
+    - name: Ensure EPEL is available
+      ansible.builtin.dnf:
+        name: epel-release
+        state: present
+      when: ansible_distribution == "RedHat" or ansible_distribution == "CentOS"
+      tags: [repos]
+
+  # ---------------------------------------------------------------------------
+  # Roles run in order after pre_tasks
+  # Galaxy roles handle generic, repeatable infrastructure
+  # Custom roles handle application-specific setup
+  # ---------------------------------------------------------------------------
+  roles:
+    - role: geerlingguy.security
+      tags: [security]
+
+    - role: geerlingguy.firewall
+      tags: [firewall]
+
+    - role: webserver
+      tags: [webserver]
+
+  # ---------------------------------------------------------------------------
+  # Tasks run AFTER roles
+  # Use for site-specific configuration that doesn't belong in a role
+  # ---------------------------------------------------------------------------
+  tasks:
+    - name: Set SELinux boolean for httpd network connections
+      ansible.posix.seboolean:
+        name: httpd_can_network_connect
+        state: true
+        persistent: true
+      tags: [selinux]
+
+    - name: Configure firewalld for HTTP/HTTPS
+      ansible.posix.firewalld:
+        port: "{{ item }}"
+        permanent: true
+        state: enabled
+        immediate: true
+      loop:
+        - "{{ http_port }}/tcp"
+        - "{{ https_port }}/tcp"
+      notify: Reload firewalld
+      tags: [firewall]
+
+    - name: Set timezone
+      community.general.timezone:
+        name: Europe/Amsterdam
+      tags: [timezone]
+
+  # ---------------------------------------------------------------------------
+  # Handlers run at the end, only when notified
+  # Deduplicated: even if notified multiple times, each handler runs once
+  # ---------------------------------------------------------------------------
+  handlers:
+    - name: Reload firewalld
+      ansible.builtin.service:
+        name: firewalld
+        state: reloaded

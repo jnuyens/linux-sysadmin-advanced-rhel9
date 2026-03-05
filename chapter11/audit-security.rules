@@ -1,0 +1,70 @@
+# /etc/audit/rules.d/50-security.rules - Chapter 11 Exercise
+#
+# Production audit rules for security monitoring.
+# Tracks changes to identity files, privileged commands, and network config.
+#
+# Install:
+#     sudo cp audit-security.rules /etc/audit/rules.d/50-security.rules
+#     sudo augenrules --load
+#
+# Verify:
+#     sudo auditctl -l
+#
+# Search:
+#     sudo ausearch -k identity --start today
+#     sudo aureport --summary
+
+# ---------------------------------------------------------------
+# Identity files - who changed users or groups?
+# ---------------------------------------------------------------
+-w /etc/passwd -p wa -k identity
+-w /etc/shadow -p wa -k identity
+-w /etc/group -p wa -k identity
+-w /etc/gshadow -p wa -k identity
+
+# ---------------------------------------------------------------
+# Privileged commands - track sudo and su usage
+# ---------------------------------------------------------------
+-w /etc/sudoers -p wa -k sudoers
+-w /etc/sudoers.d/ -p wa -k sudoers
+
+# ---------------------------------------------------------------
+# Authentication configuration
+# ---------------------------------------------------------------
+-w /etc/pam.d/ -p wa -k pam
+-w /etc/security/ -p wa -k pam
+-w /etc/ssh/sshd_config -p wa -k sshd_config
+
+# ---------------------------------------------------------------
+# Network configuration changes
+# ---------------------------------------------------------------
+-w /etc/sysconfig/network-scripts/ -p wa -k network
+-w /etc/NetworkManager/ -p wa -k network
+-w /etc/hostname -p wa -k network
+-w /etc/hosts -p wa -k network
+-w /etc/resolv.conf -p wa -k network
+
+# ---------------------------------------------------------------
+# Firewall changes
+# ---------------------------------------------------------------
+-w /etc/firewalld/ -p wa -k firewall
+
+# ---------------------------------------------------------------
+# System time changes
+# ---------------------------------------------------------------
+-a always,exit -F arch=b64 -S adjtimex -S settimeofday -k time-change
+-w /etc/localtime -p wa -k time-change
+-w /etc/chrony.conf -p wa -k time-change
+
+# ---------------------------------------------------------------
+# Cron/at modifications
+# ---------------------------------------------------------------
+-w /etc/crontab -p wa -k cron
+-w /etc/cron.d/ -p wa -k cron
+-w /var/spool/cron/ -p wa -k cron
+
+# ---------------------------------------------------------------
+# Package management
+# ---------------------------------------------------------------
+-w /usr/bin/dnf -p x -k package_install
+-w /usr/bin/rpm -p x -k package_install
