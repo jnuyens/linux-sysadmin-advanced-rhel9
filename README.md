@@ -14,6 +14,16 @@ cd linux-sysadmin-advanced-rhel9
 - `chapter1/` - systemd, startup & shutdown
 - `chapter2/` - System administration tools & remote management
 - `chapter3/` - Package management, repositories & lifecycle
+- `chapter4/` - Containers (Podman, Quadlet & container networking)
+- `chapter5/` - Storage & filesystems, partitioning & encryption
+- `chapter6/` - LVM (Logical Volume Management)
+- `chapter7/` - Automation, scheduling & monitoring with systemd timers
+- `chapter8/` - Git & version control for system administrators
+- `chapter9/` - User & group management, sudo & access control
+- `chapter10/` - Performance tuning & resource management (cgroups)
+- `chapter11/` - Logging, monitoring & Ansible automation
+- `chapter12/` - Troubleshooting & problem determination
+- `chapter13/` - Linux security hardening
 
 Each chapter directory contains template files, scripts, and configuration examples referenced in the exercises.
 
